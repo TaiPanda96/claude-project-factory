@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+
+# Throwaway scaffold targets used for testing
+/tmp/
+/smoke-test/

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "{{FORMAT_CHECK}} || {{FORMAT_CMD}}",
+            "statusMessage": "Checking formatting..."
+          }
+        ]
+      }
+    ]
+  }
+}
