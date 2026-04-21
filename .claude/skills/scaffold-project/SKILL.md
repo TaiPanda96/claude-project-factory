@@ -103,32 +103,24 @@ Run `ls <target>` (or `test -d <target>` first). Allowed states:
 
 ## Step 4: Copy the template tree
 
-Copy files individually with Read + Write so you can apply placeholder substitution in the same pass. This is more reliable than `cp -r` followed by a sed pass.
+Discover the files to copy by globbing the template directory — do not maintain a manual list.
 
-**Files to always copy:**
+```bash
+find <template-dir> -type f | sort
+```
 
-- `CLAUDE.md` → `<target>/CLAUDE.md`
-- `AGENTS.md` → `<target>/AGENTS.md`
-- `.claude/settings.json` → `<target>/.claude/settings.json`
-- `.claude/skills/SKILL_TEMPLATE.md` → `<target>/.claude/skills/SKILL_TEMPLATE.md`
-- `.claude/skills/spec/SKILL.md`
-- `.claude/skills/plan/SKILL.md`
-- `.claude/skills/implement/SKILL.md`
-- `.claude/skills/qa/SKILL.md`
-- `docs/superpowers/README.md`
-- `docs/superpowers/prompts/README.md`
-- `docs/superpowers/best-practices/README.md`
-- `docs/superpowers/specs/SPEC_CONVENTIONS.md`
-- `docs/superpowers/specs/TEMPLATE.md`
+Copy each file with Read + Write so placeholder substitution happens in the same pass. This is more reliable than `cp -r` followed by a sed pass, and automatically picks up any new files added to the template.
 
-**Files conditional on stack profile:**
+**Stack profile filtering** — after globbing, exclude paths according to the chosen profile before copying:
 
-| Profile         | Include                                                            |
+| Profile         | Exclude from copy                                                  |
 | --------------- | ------------------------------------------------------------------ |
-| `fullstack`     | `specs/backend/TEMPLATE.md`, `specs/frontend/TEMPLATE.md`          |
-| `backend-only`  | `specs/backend/TEMPLATE.md` only                                   |
-| `frontend-only` | `specs/frontend/TEMPLATE.md` only                                  |
-| `minimal`       | neither — the top-level `specs/TEMPLATE.md` is enough              |
+| `fullstack`     | nothing — copy everything                                          |
+| `backend-only`  | `docs/superpowers/specs/frontend/`                                 |
+| `frontend-only` | `docs/superpowers/specs/backend/`                                  |
+| `minimal`       | `docs/superpowers/specs/backend/`, `docs/superpowers/specs/frontend/` |
+
+Preserve the directory structure exactly: a file at `<template-dir>/foo/bar.md` copies to `<target>/foo/bar.md`.
 
 ---
 
@@ -182,6 +174,7 @@ Copied:
 
 Variables applied:
   PROJECT_NAME: <name>
+  PKG_MANAGER:  <manager>
   RUN:          <cmd>
   TYPECHECK:    <cmd>
   LINT:         <cmd>
